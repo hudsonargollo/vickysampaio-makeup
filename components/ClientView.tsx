@@ -397,7 +397,7 @@ export const ClientView: React.FC<ClientViewProps> = ({ isDarkMode, toggleTheme 
         {/* Action Buttons */}
         <div className="flex gap-3">
           <a
-            href="https://www.google.com/maps"
+            href="https://www.google.com/maps/place/R.+Valdir+Leite,+164+-+São+José,+Jequié+-+BA/data=!4m2!3m1!1s0x740a8ad2a3682c9:0x6650d02c1f43e67"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium tracking-wide transition-all hover:opacity-80"
@@ -424,7 +424,7 @@ export const ClientView: React.FC<ClientViewProps> = ({ isDarkMode, toggleTheme 
 
         {/* Photo grid — 2 columns, fixed height rows so images fill */}
         <div className="grid grid-cols-2" style={{ gap: '2px', backgroundColor: 'var(--border-subtle)' }}>
-          {['/vicky5.png', '/vicky2.png', '/vicky3.png', '/vicky1.png'].map((src, i) => (
+          {['/vicky5.png', '/vicky2.png', '/vicky7.jpg', '/vicky1.png'].map((src, i) => (
             <div key={i} style={{ height: '180px', overflow: 'hidden', backgroundColor: 'var(--bg-surface-hover)' }}>
               <img
                 src={src}

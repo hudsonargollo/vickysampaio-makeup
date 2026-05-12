@@ -27,7 +27,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 60,
       price: 110,
       category: 'Serviços',
-      imageUrl: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&auto=format&fit=crop&q=70',
+      imageUrl: '/maquiagemsocial.jpeg',
     },
     {
       id: '2',
@@ -36,7 +36,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 90,
       price: 150,
       category: 'Serviços',
-      imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=70',
+      imageUrl: '/combodeondas.jpeg',
     },
     {
       id: '3',
@@ -45,7 +45,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 120,
       price: 200,
       category: 'Serviços',
-      imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop&q=70',
+      imageUrl: '/noiva.jpeg',
     },
     {
       id: '4',
@@ -54,7 +54,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 120,
       price: 200,
       category: 'Serviços',
-      imageUrl: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&auto=format&fit=crop&q=70',
+      imageUrl: '/maquiagemsocial.jpeg',
     },
 
     // Destaques para o slider
@@ -65,7 +65,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 60,
       price: 110,
       category: 'Destaques',
-      imageUrl: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&auto=format&fit=crop&q=70',
+      imageUrl: '/maquiagemsocial.jpeg',
     },
     {
       id: '6',
@@ -74,7 +74,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 90,
       price: 150,
       category: 'Destaques',
-      imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&auto=format&fit=crop&q=70',
+      imageUrl: '/combodeondas.jpeg',
     },
     {
       id: '7',
@@ -83,7 +83,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 120,
       price: 200,
       category: 'Destaques',
-      imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&auto=format&fit=crop&q=70',
+      imageUrl: '/noiva.jpeg',
     },
     {
       id: '8',
@@ -92,7 +92,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 120,
       price: 200,
       category: 'Destaques',
-      imageUrl: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&auto=format&fit=crop&q=70',
+      imageUrl: '/maquiagemsocial.jpeg',
     },
   ],
   loyaltyProgram: {
