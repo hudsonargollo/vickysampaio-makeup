@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <title>Vicky Sampaio Makeup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Cormorant Garamond', 'Georgia', 'serif'],
+              body: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              amethyst: {
+                DEFAULT: '#543855',
+                50: '#f5f0f5',
+                100: '#ecdaec',
+                200: '#d4b5d4',
+                300: '#b88ab8',
+                400: '#9a629a',
+                500: '#7a4a7a',
+                600: '#643864',
+                700: '#543855',
+                800: '#3e2a3e',
+                900: '#2a1c2a',
+              },
+              quartz: {
+                DEFAULT: '#D4B5B0',
+                50: '#fdf8f7',
+                100: '#f9eeec',
+                200: '#f0d9d5',
+                300: '#e4c0ba',
+                400: '#d4b5b0',
+                500: '#c49a93',
+                600: '#b07f77',
+                700: '#8f6059',
+                800: '#6b4540',
+                900: '#4a2f2b',
+              },
+              zinc: {
+                950: '#09090b',
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.4s ease-in-out',
+              'fade-in-up': 'fadeInUp 0.4s ease-out',
+              'slide-up': 'slideUp 0.5s cubic-bezier(0.33, 1, 0.68, 1)',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(12px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              slideUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        /* Brand Core — used sparingly as accents */
+        --brand-amethyst: #543855;
+        --brand-quartz: #C4A09A;   /* slightly deeper for better contrast */
+        --brand-silver: #D1D5DB;
+
+        /* Dark Mode (Default) */
+        --bg-app: #0A0A0A;
+        --bg-surface: #141414;
+        --bg-surface-hover: #1E1E1E;
+        --bg-surface-active: #282828;
+        --border-subtle: #2C2C2C;
+        --text-primary: #F5F0EE;
+        --text-secondary: #A89890;
+        --text-disabled: #4A4A4A;
+        --btn-primary-bg: #2A1A2A;
+        --btn-primary-text: #F5F0EE;
+        --btn-primary-border: #C4A09A;
+        --slot-available-bg: var(--bg-surface);
+        --slot-selected-bg: #C4A09A;
+        --slot-selected-text: #0A0A0A;
+        --accent-line: #C4A09A;   /* thin decorative lines — quartz, not purple */
+      }
+
+      [data-theme="light"] {
+        --bg-app: #FDFAF8;
+        --bg-surface: #FFFFFF;
+        --bg-surface-hover: #F5EFEC;
+        --bg-surface-active: #EDE4E0;
+        --border-subtle: #E2D5D0;
+        --text-primary: #1C1210;       /* near-black warm */
+        --text-secondary: #5C4A44;     /* dark warm brown — high contrast */
+        --text-disabled: #A08880;
+        --btn-primary-bg: #1C1210;     /* near-black button in light mode */
+        --btn-primary-text: #FDFAF8;
+        --btn-primary-border: #1C1210;
+        --slot-available-bg: #FFFFFF;
+        --slot-selected-bg: #1C1210;
+        --slot-selected-text: #FDFAF8;
+        --accent-line: #C4A09A;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      h1, h2, h3, .font-display {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+      }
+
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      .btn-brand {
+        background-color: var(--btn-primary-bg);
+        color: var(--btn-primary-text);
+        border: 1px solid var(--btn-primary-border);
+      }
+      .btn-brand:hover { opacity: 0.85; }
+
+      .slot-available {
+        background-color: var(--slot-available-bg);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+      }
+      .slot-available:hover {
+        background-color: var(--bg-surface-hover);
+        border-color: var(--accent-line);
+      }
+      .slot-selected {
+        background-color: var(--slot-selected-bg) !important;
+        color: var(--slot-selected-text) !important;
+        border-color: var(--slot-selected-bg) !important;
+      }
+      .slot-disabled {
+        background-color: var(--bg-surface);
+        color: var(--text-disabled);
+        border: 1px solid var(--border-subtle);
+        cursor: not-allowed;
+        text-decoration: line-through;
+      }
+
+      input:focus {
+        outline: none;
+        box-shadow: 0 0 0 1.5px var(--accent-line);
+      }
+
+      /* Thin horizontal rule used as section divider */
+      .divider {
+        height: 1px;
+        background: var(--border-subtle);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "recharts": "https://esm.sh/recharts@^3.5.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
