@@ -54,7 +54,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 120,
       price: 200,
       category: 'Serviços',
-      imageUrl: '/maquiagemsocial.jpeg',
+      imageUrl: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&auto=format&fit=crop&q=70',
     },
 
     // Destaques para o slider
@@ -92,7 +92,7 @@ export const MOCK_PROVIDER: Provider = {
       duration: 120,
       price: 200,
       category: 'Destaques',
-      imageUrl: '/maquiagemsocial.jpeg',
+      imageUrl: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&auto=format&fit=crop&q=70',
     },
   ],
   loyaltyProgram: {

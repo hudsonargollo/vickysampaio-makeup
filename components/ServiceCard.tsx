@@ -29,6 +29,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, isSelected, o
               src={service.imageUrl}
               alt={service.name}
               className="w-full h-full object-cover"
+              style={{ objectPosition: 'center 15%' }}
             />
           </div>
         )}

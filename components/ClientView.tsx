@@ -429,7 +429,7 @@ export const ClientView: React.FC<ClientViewProps> = ({ isDarkMode, toggleTheme 
               <img
                 src={src}
                 alt={`Vicky Sampaio ${i + 1}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%', display: 'block' }}
               />
             </div>
           ))}
