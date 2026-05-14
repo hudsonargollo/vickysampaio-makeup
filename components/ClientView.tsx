@@ -1,11 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MOCK_PROVIDER, TIME_SLOTS } from '../constants';
-import { Service, TimeSlot } from '../types';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { MOCK_PROVIDER } from '../constants';
+import { Service } from '../types';
 import { ServiceCard } from './ServiceCard';
 import { HighlightCard } from './HighlightCard';
 import { SmartCart } from './SmartCart';
 import { AIChat } from './AIChat';
 import { LoyaltyCard } from './LoyaltyCard';
+import {
+  fetchSlots,
+  fetchClientVisits,
+  createAppointment,
+  getUpcomingDates,
+  type TimeSlot,
+} from '../services/api';
 
 interface ClientViewProps {
   isDarkMode: boolean;
@@ -18,106 +25,115 @@ export const ClientView: React.FC<ClientViewProps> = ({ isDarkMode, toggleTheme 
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
-  // Single professional — always Vicky
   const selectedProfessional = MOCK_PROVIDER.professionals[0];
-  
-  // User Identity State
+
+  // Identity
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  
-  // Mock User State (starts at 9, but would be fetched based on phone in real app)
-  const [visits, setVisits] = useState(5);
+
+  // Loyalty — fetched from API after booking
+  const [visits, setVisits] = useState(0);
   const [rewardUnlocked, setRewardUnlocked] = useState(false);
 
-  // Auto-scroll logic for Highlights slideshow
-  useEffect(() => {
-    // Entrance animation delay
-    const entranceTimer = setTimeout(() => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTo({ left: 0 });
-      }
-    }, 100);
+  // Calendar state
+  const upcomingDates = getUpcomingDates(4);
+  const [selectedDateIdx, setSelectedDateIdx] = useState(0);
+  const selectedDate = upcomingDates[selectedDateIdx]?.value ?? '';
 
-    // Auto-slide to the right after 1500ms
-    const slideTimer = setTimeout(() => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-      }
-    }, 1500);
+  // Slots from API
+  const [slots, setSlots] = useState<TimeSlot[]>([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
 
-    return () => {
-      clearTimeout(entranceTimer);
-      clearTimeout(slideTimer);
-    };
+  // Booking state
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState('');
+
+  // Load slots when date changes
+  const loadSlots = useCallback(async (date: string) => {
+    setSlotsLoading(true);
+    setSelectedSlot(null);
+    try {
+      const data = await fetchSlots(date);
+      setSlots(data);
+    } catch {
+      setSlots([]);
+    } finally {
+      setSlotsLoading(false);
+    }
   }, []);
 
-  // If cart becomes empty while in booking flow, go back to services
   useEffect(() => {
-    if (cart.length === 0 && step !== 'services' && step !== 'success') {
-      setStep('services');
+    if (step === 'calendar' && selectedDate) {
+      loadSlots(selectedDate);
     }
+  }, [step, selectedDate, loadSlots]);
+
+  // Slideshow auto-scroll
+  useEffect(() => {
+    const t1 = setTimeout(() => scrollContainerRef.current?.scrollTo({ left: 0 }), 100);
+    const t2 = setTimeout(() => scrollContainerRef.current?.scrollBy({ left: 300, behavior: 'smooth' }), 1500);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  // Back to services if cart empties mid-flow
+  useEffect(() => {
+    if (cart.length === 0 && step !== 'services' && step !== 'success') setStep('services');
   }, [cart, step]);
 
   const toggleService = (service: Service) => {
-    setCart(prev => {
-      const exists = prev.find(s => s.id === service.id);
-      if (exists) {
-        return prev.filter(s => s.id !== service.id);
-      }
-      return [...prev, service];
-    });
+    setCart(prev => prev.find(s => s.id === service.id)
+      ? prev.filter(s => s.id !== service.id)
+      : [...prev, service]
+    );
   };
 
   const totalDuration = cart.reduce((acc, curr) => acc + curr.duration, 0);
+  const initiateBooking = () => { setBookingError(''); setStep('identify'); };
 
-  // Move from Calendar to Identification
-  const initiateBooking = () => {
-    setStep('identify');
-  };
+  // Real booking via Worker API
+  const completeBooking = async () => {
+    if (!customerName || !customerPhone || !selectedSlot) return;
+    setBookingLoading(true);
+    setBookingError('');
 
-  // Finalize booking after Identification
-  const completeBooking = () => {
-    if (!customerName || !customerPhone) return;
+    try {
+      // Book each service as a separate appointment (or just the first for now)
+      const primary = cart[0];
+      await createAppointment({
+        clientName: customerName,
+        clientPhone: customerPhone,
+        serviceId: primary.id,
+        serviceName: cart.map(s => s.name).join(' + '),
+        servicePrice: cart.reduce((a, c) => a + c.price, 0),
+        serviceDuration: totalDuration,
+        date: selectedDate,
+        time: selectedSlot.time,
+      });
 
-    // Simulate API call and Logic
-    // In a real app, we would send customerPhone to backend to track rewards
-    console.log("Booking for:", { customerName, customerPhone, cart, selectedSlot });
-
-    setTimeout(() => {
-      // Increment visits
-      const newVisitCount = visits + 1;
-      setVisits(newVisitCount);
-      
-      // Check for reward unlock
-      if (MOCK_PROVIDER.loyaltyProgram?.enabled && newVisitCount % MOCK_PROVIDER.loyaltyProgram.threshold === 0) {
+      // Fetch real visit count
+      const v = await fetchClientVisits(customerPhone);
+      setVisits(v);
+      if (MOCK_PROVIDER.loyaltyProgram?.enabled && v > 0 && v % MOCK_PROVIDER.loyaltyProgram.threshold === 0) {
         setRewardUnlocked(true);
-      } else {
-        setRewardUnlocked(false);
       }
 
       setStep('success');
-    }, 800);
+    } catch (e: unknown) {
+      setBookingError(e instanceof Error ? e.message : 'Erro ao agendar. Tente novamente.');
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
-  // Format Phone Number as user types (Simple mask)
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
-    if (value.length > 11) value = value.slice(0, 11); // Max 11 digits (BR format)
-    
-    // Simple formatting (XX) XXXXX-XXXX
-    if (value.length > 2) {
-      value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
-    }
-    if (value.length > 9) {
-      value = `${value.slice(0, 10)}-${value.slice(10)}`;
-    }
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
+    if (value.length > 2) value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+    if (value.length > 9) value = `${value.slice(0, 10)}-${value.slice(10)}`;
     setCustomerPhone(value);
   };
 
-  // Destaques for the slider (real photos)
   const highlights = MOCK_PROVIDER.services.filter(s => s.category === 'Destaques');
-
-  // Get other categories, excluding Destaques
   const categories = Array.from(new Set(MOCK_PROVIDER.services.map(s => s.category))).filter(c => c !== 'Destaques');
 
   if (step === 'success') {
@@ -234,11 +250,14 @@ export const ClientView: React.FC<ClientViewProps> = ({ isDarkMode, toggleTheme 
           <div className="mt-8">
             <button
               onClick={completeBooking}
-              disabled={!customerName || customerPhone.length < 14}
+              disabled={!customerName || customerPhone.length < 14 || bookingLoading}
               className="w-full btn-brand font-medium text-sm py-4 rounded-xl tracking-widest uppercase transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
             >
-              Confirmar Agendamento
+              {bookingLoading ? 'Agendando...' : 'Confirmar Agendamento'}
             </button>
+            {bookingError && (
+              <p className="text-center text-xs mt-3" style={{ color: '#ef4444' }}>{bookingError}</p>
+            )}
             <p className="text-center text-xs mt-4" style={{ color: 'var(--text-disabled)' }}>
               Ao continuar, você concorda em receber mensagens sobre seu agendamento.
             </p>
@@ -267,39 +286,48 @@ export const ClientView: React.FC<ClientViewProps> = ({ isDarkMode, toggleTheme 
         </div>
 
         <div className="p-4">
-          {/* Day Tabs */}
+          {/* Day Tabs — real upcoming dates */}
           <div className="mb-6">
             <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-              {['Hoje', 'Amanhã', 'Qua 29', 'Qui 30'].map((day, i) => (
+              {upcomingDates.map((d, i) => (
                 <button
-                  key={day}
+                  key={d.value}
+                  onClick={() => setSelectedDateIdx(i)}
                   className="px-5 py-2 rounded-full whitespace-nowrap text-xs font-medium tracking-widest uppercase transition-all"
-                  style={i === 0
+                  style={i === selectedDateIdx
                     ? { backgroundColor: 'var(--slot-selected-bg)', color: 'var(--slot-selected-text)' }
                     : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }
                   }
                 >
-                  {day}
+                  {d.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Time Slots Grid */}
-          <div className="grid grid-cols-3 gap-2">
-            {TIME_SLOTS.map(slot => (
-              <button
-                key={slot.id}
-                disabled={!slot.available}
-                onClick={() => setSelectedSlot(slot)}
-                className={`py-4 rounded-lg text-center text-sm font-medium transition-all ${
-                  !slot.available ? 'slot-disabled line-through' : selectedSlot?.id === slot.id ? 'slot-selected scale-105 shadow-lg' : 'slot-available hover:scale-[1.02]'
-                }`}
-              >
-                {slot.time}
-              </button>
-            ))}
-          </div>
+          {/* Time Slots Grid — live from API */}
+          {slotsLoading ? (
+            <div className="grid grid-cols-3 gap-2">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="py-4 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--bg-surface)' }} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-2">
+              {slots.map(slot => (
+                <button
+                  key={slot.id}
+                  disabled={!slot.available}
+                  onClick={() => setSelectedSlot(slot)}
+                  className={`py-4 rounded-lg text-center text-sm font-medium transition-all ${
+                    !slot.available ? 'slot-disabled line-through' : selectedSlot?.id === slot.id ? 'slot-selected scale-105 shadow-lg' : 'slot-available hover:scale-[1.02]'
+                  }`}
+                >
+                  {slot.time}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Summary Card */}
           <div className="mt-8 rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>

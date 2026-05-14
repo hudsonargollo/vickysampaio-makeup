@@ -1,0 +1,15 @@
+{
+  "name": "vickysampaio-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 execute vickysampaio-db --file=./schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241205.0",
+    "typescript": "~5.8.2",
+    "wrangler": "^4.84.1"
+  }
+}

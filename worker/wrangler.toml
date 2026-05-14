@@ -1,0 +1,16 @@
+name = "vickysampaio-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "vickysampaio-db"
+database_id = "641b6c98-ca5b-4e9f-8769-202b2d4d2bd5"
+
+[[kv_namespaces]]
+binding = "CONFIG"
+id = "dd91132fe04e4477952100bf1f32cb6d"
+
+[vars]
+FRONTEND_URL = "https://vickysampaio-makeup.pages.dev"
